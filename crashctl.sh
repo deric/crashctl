@@ -172,7 +172,8 @@ function main {
     else
       rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
     fi
-    local first_msg="${ary[3]} ${ary[4]} ${ary[5]:0:3}"
+    # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
+    local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
     local last_msg="${ary[6]} ${ary[7]}"
     if [[ ${show_id} == true ]]; then
       second_col="${uuid}"
