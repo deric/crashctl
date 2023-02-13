@@ -39,6 +39,10 @@ function os_version {
   lsb_release -d | cut -f2
 }
 
+function running_processes {
+  ps ax | wc -l | tr -d ' '
+}
+
 function install_date {
   # try checking root filesystem install date
   local installed=$(stat / | grep "Birth" | sed 's/Birth: //g' | cut -b 2-11)
@@ -132,6 +136,7 @@ function main {
   banner "System installed" "$(install_date)"
   banner "System started" "$(system_start)"
   banner "Uptime" "$(parse_uptime)"
+  banner "Running processes" "$(running_processes)"
   banner "kdump" "$(check_kdump)"
 
   local line_format='%-4s %-38s %-24s %-12s %s\n'
