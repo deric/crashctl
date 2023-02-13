@@ -115,9 +115,11 @@ function main {
   local utc=false
   local last_lines=20
   local show_id=false
+  local boots_only=false
   while [[ $# -gt 0 ]]
   do
     case "$1" in
+      -b|--boots)           boots_only=true; shift 1 ;;
       -i|--id)              show_id=true; shift 1 ;;
       -n|--last)            last_lines="$2"; shift 2 ;;
       -v|--verbose)         verbose=true; shift 1 ;;
@@ -132,15 +134,17 @@ function main {
 
   local curr_boot="$(current_boot)"
 
-  banner "Distribution" "$(os_version)"
-  banner "Kernel" "$(kernel_version)"
-  banner "Current boot" "${curr_boot}"
-  banner "Scaled load" "$(print_load)"
-  banner "System installed" "$(install_date)"
-  banner "System started" "$(system_start)"
-  banner "Uptime" "$(parse_uptime)"
-  banner "Running processes" "$(running_processes)"
-  banner "kdump" "$(check_kdump)"
+  if [[ ${boots_only} == false ]]; then
+    banner "Distribution" "$(os_version)"
+    banner "Kernel" "$(kernel_version)"
+    banner "Current boot" "${curr_boot}"
+    banner "Scaled load" "$(print_load)"
+    banner "System installed" "$(install_date)"
+    banner "System started" "$(system_start)"
+    banner "Uptime" "$(parse_uptime)"
+    banner "Running processes" "$(running_processes)"
+    banner "kdump" "$(check_kdump)"
+  fi
 
   local second_col="First message"
   local col2size=20
