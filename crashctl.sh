@@ -35,6 +35,10 @@ function parse_uptime {
   echo $res
 }
 
+function os_version {
+  lsb_release -d | cut -f2
+}
+
 function install_date {
   # try checking root filesystem install date
   local installed=$(stat / | grep "Birth" | sed 's/Birth: //g' | cut -b 2-11)
@@ -68,7 +72,7 @@ function check_rebooted {
   local out="$(journalctl -k -b $1 -n $2 -o cat | grep 'SIGTERM')"
   local res=""
   if [[ ! -z "${out}" ]]; then
-    res="-- reboot (SIGTERM) --"
+    res="reboot (SIGTERM)"
   else
     out="$(journalctl -u systemd-logind -b $1 -n $2 | grep 'Power key pressed')"
     if [[ ! -z "${out}" ]]; then
@@ -121,6 +125,7 @@ function main {
 
   local curr_boot="$(current_boot)"
 
+  banner "Distribution" "$(os_version)"
   banner "Kernel" "$(kernel_version)"
   banner "Current boot" "${curr_boot}"
   banner "Scaled load" "$(print_load)"
