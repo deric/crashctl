@@ -49,7 +49,7 @@ function install_date {
   local installed=$(stat / | grep "Birth" | sed 's/Birth: //g' | cut -b 2-11)
   if [[ "${installed}" == "-" ]]; then
     local fs=$(df / | tail -1 | cut -f1 -d' ')
-    installed="$(tune2fs -l $fs | grep 'Filesystem created' | cut -d':' -f 2- | xargs)"
+    installed="$(tune2fs -l ${fs} | grep 'Filesystem created' | cut -d':' -f 2- | awk '{$1=$1};1')"
   fi
   date -d"${installed}"
 }
