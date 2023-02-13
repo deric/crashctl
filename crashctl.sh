@@ -93,6 +93,12 @@ function check_rebooted {
       res="CRASH?"
     fi
   fi
+
+  # Search for kernel bugs, crashes
+  out="$(journalctl -k -b $1 | grep -E 'Oops|BUG')"
+  if [[ ! -z "${out}" ]]; then
+    res+=" BUG at $(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
+  fi
   echo "${res}"
 }
 
