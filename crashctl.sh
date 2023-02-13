@@ -181,7 +181,7 @@ function main {
     fi
     # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
     local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
-    local last_msg="${ary[6]} ${ary[7]}"
+    local last_msg="${ary[6]} ${ary[7]} ${ary[8]}"
     if [[ ${show_id} == true ]]; then
       second_col="${uuid}"
     else
@@ -189,7 +189,7 @@ function main {
     fi
 
     local up="$(date_diff "${first_msg}" "${last_msg}")"
-    printf "${line_format}" "${boot_id}" "${second_col}" "${last_msg} ${ary[8]}" "${up}" "${rebooted}"
+    printf "${line_format}" "${boot_id}" "${second_col}" "${last_msg}" "${up}" "${rebooted}"
   done < <(eval "${cmd}")
 }
 

@@ -44,14 +44,19 @@ See `crashctl -h` for usage.
 Detecting crash is not always reliable sometimes kernel might crash without logging a message or the power could be cut, etc. Reboot or shutdown sequence can be found in logs.
 
 ```
-$ crashctl --boots
+$ crashctl --boots --utc
 Boot First message             Last message             Uptime       Reboot/Crash
 -------------------------------------------------------------------------------------
--6   2023-02-07 06:50:30 UTC   2023-02-12 17:23:28 UTC  5d 10:32:58  CRASH?
--5   2023-02-12 17:26:04 UTC   2023-02-12 17:34:59 UTC  0d 00:08:55  CRASH?
--4   2023-02-12 17:37:39 UTC   2023-02-12 21:48:10 UTC  0d 04:10:31  CRASH?
--3   2023-02-12 21:50:48 UTC   2023-02-12 22:38:56 UTC  0d 00:48:08  CRASH?
--2   2023-02-12 22:42:02 UTC   2023-02-13 02:02:07 UTC  0d 03:20:05  CRASH?
--1   2023-02-13 02:04:40 UTC   2023-02-13 04:04:46 UTC  0d 02:00:06  CRASH?
-0    2023-02-13 04:07:21 UTC   2023-02-13 16:35:41 UTC  0d 12:28:20  running
+-11  2022-12-05 20:43:53 UTC   2022-12-05 20:52:00 UTC  0d 00:08:07  reboot (SIGTERM)
+-10  2022-12-06 07:56:01 UTC   2022-12-06 15:14:36 UTC  0d 07:18:35  CRASH?
+-9   2022-12-07 12:28:07 UTC   2022-12-10 16:33:43 UTC  3d 04:05:36  reboot (SIGTERM)
+-8   2022-12-12 08:56:05 UTC   2022-12-18 08:18:40 UTC  5d 23:22:35  CRASH?
+-7   2022-12-18 08:32:27 UTC   2022-12-25 10:54:03 UTC  7d 02:21:36  reboot (SIGTERM)
+-6   2022-12-28 10:51:54 UTC   2022-12-29 12:12:32 UTC  1d 01:20:38  Power key pressed, but ignored
+-5   2023-01-02 08:45:54 UTC   2023-01-06 08:05:01 UTC  3d 23:19:07  CRASH?
+-4   2023-01-06 10:07:00 UTC   2023-01-12 10:01:25 UTC  5d 23:54:25  Power key pressed, but ignored
+-3   2023-01-12 10:04:36 UTC   2023-01-28 14:07:19 UTC  16d 04:02:43 reboot (SIGTERM)
+-2   2023-01-30 08:43:42 UTC   2023-01-31 07:27:26 UTC  0d 22:43:44  reboot (SIGTERM)
+-1   2023-02-02 12:41:51 UTC   2023-02-04 13:16:19 UTC  2d 00:34:28  reboot (SIGTERM)
+0    2023-02-06 03:12:01 UTC   2023-02-13 18:17:52 UTC  7d 15:05:51  running
 ```
