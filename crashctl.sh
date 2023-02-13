@@ -147,7 +147,7 @@ function main {
   fi
 
   local second_col="First message"
-  local col2size=20
+  local col2size=25
   if [[ ${show_id} == true ]]; then
     second_col="UUID"
     col2size=38
