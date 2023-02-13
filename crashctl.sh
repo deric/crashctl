@@ -5,6 +5,7 @@ function -h {
   cat <<USAGE
    USAGE: A tool to diagnose system reboots
 
+   -i / --id      Show boot ID
    -n / --last    Last N messages of system logs to check (default: 20)
    -u / --utc     Show timestamps in UTC
    -v / --verbose Show timestamps in UTC
@@ -113,9 +114,11 @@ function main {
   local verbose=false
   local utc=false
   local last_lines=20
+  local show_id=false
   while [[ $# -gt 0 ]]
   do
-    case "$1" in                                      # Munging globals, beware
+    case "$1" in
+      -i|--id)              show_id=true; shift 1 ;;
       -n|--last)            last_lines="$2"; shift 2 ;;
       -v|--verbose)         verbose=true; shift 1 ;;
       -u|--utc)             utc=true; shift 1 ;;
@@ -139,8 +142,14 @@ function main {
   banner "Running processes" "$(running_processes)"
   banner "kdump" "$(check_kdump)"
 
-  local line_format='%-4s %-38s %-24s %-12s %s\n'
-  printf "${line_format}" "Boot" "UUID" "Last message" "Uptime" "Reboot/Crash"
+  local second_col="First message"
+  local col2size=20
+  if [[ ${show_id} == true ]]; then
+    second_col="UUID"
+    col2size=38
+  fi
+  local line_format="%-4s %-${col2size}s %-24s %-12s %s\n"
+  printf "${line_format}" "Boot" "${second_col}" "Last message" "Uptime" "Reboot/Crash"
   printf -- '-%.0s' {1..85}
   printf '\n'
 
@@ -159,11 +168,16 @@ function main {
     else
       rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
     fi
-    local first_msg="${ary[3]} ${ary[4]}"
+    local first_msg="${ary[3]} ${ary[4]} ${ary[5]:0:3}"
     local last_msg="${ary[6]} ${ary[7]}"
+    if [[ ${show_id} == true ]]; then
+      second_col="${uuid}"
+    else
+      second_col="${first_msg}"
+    fi
 
     local up="$(date_diff "${first_msg}" "${last_msg}")"
-    printf "${line_format}" "${boot_id}" "${uuid}" "${last_msg} ${ary[8]}" "${up}" "${rebooted}"
+    printf "${line_format}" "${boot_id}" "${second_col}" "${last_msg} ${ary[8]}" "${up}" "${rebooted}"
   done < <(eval "${cmd}")
 }
 
