@@ -33,3 +33,25 @@ Following utils might require `root` priviledges:
 
   - `journalctl`
   - `tune2fs`
+
+## Usage
+
+See `crashctl -h` for usage.
+
+
+## Advanced usage
+
+Detecting crash is not always reliable sometimes kernel might crash without logging a message or the power could be cut, etc. Reboot or shutdown sequence can be found in logs.
+
+```
+$ crashctl --boots
+Boot First message             Last message             Uptime       Reboot/Crash
+-------------------------------------------------------------------------------------
+-6   2023-02-07 06:50:30 UTC   2023-02-12 17:23:28 UTC  5d 10:32:58  CRASH?
+-5   2023-02-12 17:26:04 UTC   2023-02-12 17:34:59 UTC  0d 00:08:55  CRASH?
+-4   2023-02-12 17:37:39 UTC   2023-02-12 21:48:10 UTC  0d 04:10:31  CRASH?
+-3   2023-02-12 21:50:48 UTC   2023-02-12 22:38:56 UTC  0d 00:48:08  CRASH?
+-2   2023-02-12 22:42:02 UTC   2023-02-13 02:02:07 UTC  0d 03:20:05  CRASH?
+-1   2023-02-13 02:04:40 UTC   2023-02-13 04:04:46 UTC  0d 02:00:06  CRASH?
+0    2023-02-13 04:07:21 UTC   2023-02-13 16:35:41 UTC  0d 12:28:20  running
+```
