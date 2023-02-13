@@ -81,7 +81,14 @@ function check_rebooted {
   else
     out="$(journalctl -u systemd-logind -b $1 -n $2 | grep 'Power key pressed')"
     if [[ ! -z "${out}" ]]; then
-      res="Power key pressed at $(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
+      local shutdown_date="$(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
+      local shutdown_ts=$(date -d"${shutdown_date}" '+%s')
+      # shutdown should happen within 2 min
+      if [[ ${shutdown_ts} -lt 120 ]]; then
+        res="Power key pressed at ${shutdown_ts}"
+      else
+        res="Power key pressed, but ignored"
+      fi
     else
       res="CRASH?"
     fi
