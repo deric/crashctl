@@ -37,7 +37,14 @@ function parse_uptime {
 }
 
 function os_version {
-  lsb_release -d | cut -f2
+  if [[ -f /etc/os-release ]]; then
+    echo $(cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f 2 | tr -d '"')
+  else
+    local lsb=$(which lsb_release)
+    if [[ ! -z "${lsb}" ]]; then
+      echo $(lsb_release -d | cut -f2)
+    fi
+  fi
 }
 
 function running_processes {
