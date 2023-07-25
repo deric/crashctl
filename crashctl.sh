@@ -8,7 +8,7 @@ function -h {
    -i / --id      Show boot ID
    -n / --last    Last N messages of system logs to check (default: 20)
    -u / --utc     Show timestamps in UTC
-   -v / --verbose Show timestamps in UTC
+   -v / --verbose Print each executed command
 
       $(basename "$0")
 USAGE
@@ -182,27 +182,30 @@ function main {
     cmd+=" --utc"
   fi
   while read line; do
-    local ary=($line)
-    local boot_id=${ary[0]}
-    local uuid="$(format_uuid ${ary[1]})"
+    # skip header (e.g. on systemd >= 252)
+    if [[ "${line}" =~ ^[-0-9]+ ]]; then
+      local ary=($line)
+      local boot_id=${ary[0]}
+      local uuid="$(format_uuid ${ary[1]})"
 
-    local rebooted=""
-    if [[ "${uuid}" == "${curr_boot}" ]]; then
-      rebooted="running"
-    else
-      rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
-    fi
-    # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
-    local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
-    local last_msg="${ary[6]} ${ary[7]} ${ary[8]}"
-    if [[ ${show_id} == true ]]; then
-      second_col="${uuid}"
-    else
-      second_col="${first_msg}"
-    fi
+      local rebooted=""
+      if [[ "${uuid}" == "${curr_boot}" ]]; then
+        rebooted="running"
+      else
+        rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
+      fi
+      # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
+      local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
+      local last_msg="${ary[6]} ${ary[7]} ${ary[8]}"
+      if [[ ${show_id} == true ]]; then
+        second_col="${uuid}"
+      else
+        second_col="${first_msg}"
+      fi
 
-    local up="$(date_diff "${first_msg}" "${last_msg}")"
-    printf "${line_format}" "${boot_id}" "${second_col}" "${last_msg}" "${up}" "${rebooted}"
+      local up="$(date_diff "${first_msg}" "${last_msg}")"
+      printf "${line_format}" "${boot_id}" "${second_col}" "${last_msg}" "${up}" "${rebooted}"
+    fi
   done < <(eval "${cmd}")
 }
 
