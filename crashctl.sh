@@ -130,18 +130,34 @@ function check_kdump {
   fi
 }
 
+# args:
+# 1: date of last message
+# 2: directory where crashlogs are being stored
+# 3: cause of reboot
+function check_crashlog {
+  local lastmsg=$(date -d "$1" '+%Y%m%d%H%M')
+  local crashlog="$2/${lastmsg}"
+  if [[ -d "${crashlog}" ]]; then
+    echo "kernel panic. see ${crashlog}"
+  else
+    echo $3
+  fi
+}
+
 function main {
   local verbose=false
   local utc=false
   local last_lines=20
   local show_id=false
   local boots_only=false
+  local crashdir="/var/crash"
   while [[ $# -gt 0 ]]
   do
     case "$1" in
       -b|--boots)           boots_only=true; shift 1 ;;
       -i|--id)              show_id=true; shift 1 ;;
       -n|--last)            last_lines="$2"; shift 2 ;;
+      -c|--crashdir)        crashdir="$2"; shift 2 ;;
       -v|--verbose)         verbose=true; shift 1 ;;
       -u|--utc)             utc=true; shift 1 ;;
       *)                    err 'Argument error. Please see help: -h' ;;
@@ -187,16 +203,19 @@ function main {
       local ary=($line)
       local boot_id=${ary[0]}
       local uuid="$(format_uuid ${ary[1]})"
+      local last_msg="${ary[6]} ${ary[7]} ${ary[8]}"
 
       local rebooted=""
       if [[ "${uuid}" == "${curr_boot}" ]]; then
         rebooted="running"
       else
         rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
+	if [[ "${rebooted}" == "CRASH?" ]]; then
+          rebooted=$(check_crashlog "${last_msg}" "${crashdir}" "${rebooted}")
+	fi
       fi
       # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
       local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
-      local last_msg="${ary[6]} ${ary[7]} ${ary[8]}"
       if [[ ${show_id} == true ]]; then
         second_col="${uuid}"
       else

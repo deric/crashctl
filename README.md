@@ -38,6 +38,15 @@ Following utils might require `root` priviledges:
 
 See `crashctl -h` for usage.
 
+With `kdump-tools` installed each session might be matched to a crash log:
+
+```
+-2   2023-09-08 11:35:19 UTC   2023-09-08 11:35:32 UTC  0d 00:00:13  kernel panic. See /var/crash/202309081135
+-1   2023-09-08 11:38:37 UTC   2023-09-08 12:45:32 UTC  0d 01:06:55  CRASH?
+0    2023-09-08 13:39:29 UTC   2023-09-08 21:31:53 UTC  0d 07:52:24  running
+
+```
+
 
 ## Advanced usage
 
