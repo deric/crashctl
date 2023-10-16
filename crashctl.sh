@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o errexit -o nounset -o pipefail
+set -o nounset -o pipefail
 export LC_ALL=C
 function -h {
   cat <<USAGE
@@ -209,10 +209,15 @@ function main {
       if [[ "${uuid}" == "${curr_boot}" ]]; then
         rebooted="running"
       else
-        rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
-	if [[ "${rebooted}" == "CRASH?" ]]; then
-          rebooted=$(check_crashlog "${last_msg}" "${crashdir}" "${rebooted}")
-	fi
+        journalctl -b ${boot_id} -n 0 2> /dev/null 1> /dev/null
+        if [[ $? -eq 1 ]]; then
+          rebooted=$(journalctl -b ${boot_id} 2>&1) # journalctl reports error, show the error message
+        else
+          rebooted="$(check_rebooted "${boot_id}" "${last_lines}")"
+          if [[ "${rebooted}" == "CRASH?" ]]; then
+            rebooted=$(check_crashlog "${last_msg}" "${crashdir}" "${rebooted}")
+          fi
+        fi
       fi
       # include TZ that has more than 3 letters, skip hyphen (non-ASCI)
       local first_msg="$(echo "${ary[3]} ${ary[4]} ${ary[5]}" | grep -oP '^([\w+-:0-9\s])+')"
