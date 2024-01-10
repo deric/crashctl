@@ -36,6 +36,10 @@ function parse_uptime {
   echo $res
 }
 
+function systemd_version {
+  systemd --version | head -n1 | awk '{print $2}'
+}
+
 function os_version {
   if [[ -f /etc/os-release ]]; then
     echo $(cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f 2 | tr -d '"')
@@ -102,7 +106,13 @@ function check_rebooted {
   fi
 
   # Search for kernel bugs, crashes
-  out="$(journalctl -k -b $1 | grep -E 'Oops|BUG')"
+  # check if journalctl compiled with grep functionality
+  systemd --version | grep "+PCRE2" > /dev/null
+  if [[ $? -eq 0 ]]; then
+    out="$(journalctl -k -b $1 -g 'Oops|BUG')"
+  else
+    out="$(journalctl -k -b $1 | grep -E 'Oops|BUG')"
+  fi
   if [[ ! -z "${out}" ]]; then
     res+=" BUG at $(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
   fi
@@ -180,6 +190,7 @@ function main {
     banner "Uptime" "$(parse_uptime)"
     banner "Running processes" "$(running_processes)"
     banner "kdump" "$(check_kdump)"
+    banner "systemd version" "$(systemd_version)"
   fi
 
   local second_col="First message"
