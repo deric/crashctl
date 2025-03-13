@@ -37,7 +37,7 @@ function parse_uptime {
 }
 
 function systemd_version {
-  systemd --version | head -n1 | awk '{print $2}'
+  systemctl --version | head -n1 | awk '{print $2}'
 }
 
 function os_version {
@@ -107,7 +107,7 @@ function check_rebooted {
 
   # Search for kernel bugs, crashes
   # check if journalctl compiled with grep functionality
-  systemd --version | grep "+PCRE2" > /dev/null
+  systemctl --version | grep "+PCRE2" > /dev/null
   if [[ $? -eq 0 ]]; then
     out="$(journalctl -k -b $1 -g 'Oops|BUG')"
   else
