@@ -113,8 +113,8 @@ function check_rebooted {
   else
     out="$(journalctl -k -b $1 | grep -E 'Oops|BUG')"
   fi
-  if [[ ! -z "${out}" ]]; then
-    res+=" BUG at $(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
+  if [ ! -z "${out}" -a "${out}" != '-- No entries --' ]; then
+    res+=" $(echo "${out}" | tail -n 1 | cut -d ' ' -f 1-3)"
   fi
   echo "${res}"
 }
