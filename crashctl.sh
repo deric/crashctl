@@ -101,7 +101,7 @@ function check_rebooted {
         res="Power key pressed, but ignored"
       fi
     else
-      res="CRASH?"
+      res="n/a (possibly CRASH or journald was rotated)"
     fi
   fi
 
